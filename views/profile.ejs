@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <link rel="stylesheet" type="text/css" href="/css/profile.css">
+</head>
+<body>
+    <div class="profile-container">
+      <div class="profile-header">
+          <img src="https://via.placeholder.com/100" alt="User Profile Picture">
+          <h1><%= fname %> <%= lname %></h1>
+      </div>
+      <div class="profile-body">
+          <p>Email: <%= email %></p>
+          <p>Postal Code: <%= zip %></p>
+      </div>
+      <div class="profile-footer">
+        <button onclick="displayPayload()">Display Payload</button>
+      </div>
+    </div>
+
+    <div class="json-response">
+      <pre id="jsonOutput" hidden><%= payload %></pre>
+    </div>
+
+    <script>
+      function displayPayload() {
+        const element = document.getElementById('jsonOutput');
+        element.hidden = !element.hidden;
+      }
+    </script>
+</body>
+</html>

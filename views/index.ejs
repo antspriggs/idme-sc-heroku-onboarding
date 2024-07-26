@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ID.me Demo App 3.0</title>
+
+  <link rel="stylesheet" type="text/css" href="/css/styles.css">
+
+</head>
+<body>
+<!-- 
+  <span
+    id="idme-wallet-button"
+    data-scope="<%= scope %>"
+    data-client-id="<%= clientID %>"
+    data-redirect="<%= redirectUri %>"
+    data-response="code"
+    data-text="[AFFINITY GROUP] receives [OFFER] with ID.me"
+    data-show-verify="true"
+    data-state="<%= state %>"
+    data-eid="<%= eid %>"
+    data-sandbox="true"
+    >
+  </span>
+  <script src="https://s3.amazonaws.com/idme/developer/idme-buttons/assets/js/idme-wallet-button.js"></script>
+
+  <idme-widget
+      appid="abc123"
+      background="gray"
+      clientid="<%= clientID %>"
+      display="popup"
+      headinglevel="1"
+      helplink="https://help.id.me/hc/en-us/articles/19679310213271-Setting-up-your-ID-me-account-for-work"
+      hero=""
+      logo=""
+      redirect="<%= redirectUri %>"
+      response="code"
+      scope="<%= scope %>"
+      state="<%= state %>"
+      eid="<%= eid %>"
+      type=""
+    >
+  </idme-widget>
+  <script src="https://assets.id.me/widget/1.0.0-alpha.0/widget.js"></script> -->
+
+  <div>
+    <a href="<%= envDomain %>/oauth/authorize?client_id=<%= clientID %>&redirect_uri=<%= redirectUri %>&response_type=code&scope=<%= scope %>&state=<%= state %>&eid=<%= eid %>">
+      <img src="https://s3.amazonaws.com/idme/developer/idme-buttons/assets/img/verify.svg" alt="Verify with ID.me"/>
+    </a>
+  </div>
+  
+</body>
+</html>

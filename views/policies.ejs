@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ID.me Demo App 3.0</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+</head>
+<body>
+  <div class="container">
+    <p class="flow-text center-align">If you are looking to test policies <strong>in <%= env %></strong>, you are in the right place. </p>
+    <table class="responsive-table">
+      <thead>
+        <tr>
+          <th>Policy Name</th>
+          <th>Test Link</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for(var i=0; i < policies.length; i++) { %>
+          <tr>
+            <td><%= policies[i].name %></td>
+            <td>
+              <a href="/<%= basePath %>/<%= env %>/<%= protocol %>/<%= encodeURIComponent(policies[i].handle) %>"> 
+                /<%= basePath %>/<%= env %>/<%= protocol %>/<%= encodeURIComponent(policies[i].handle) %>
+              </a>
+            </td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

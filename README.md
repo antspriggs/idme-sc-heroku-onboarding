@@ -21,7 +21,9 @@ git clone https://github.com/antspriggs/idme-sc-heroku-onboarding.git
 cd idme-sc-heroku-onboarding
 ```
 
-2. Log into Heroku CLI
+2. Log into Heroku CLI 
+
+**VPN must be turned off for this step**
 
 ```
 heroku login
@@ -51,6 +53,12 @@ git --version
 
 ```
 heroku git:remote -a <<your Heroku app name>>
+```
+
+## Setup Application
+
+```
+npm install
 ```
 
 
