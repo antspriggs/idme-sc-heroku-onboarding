@@ -75,7 +75,7 @@ app.get('/idme/:env/:protocol', async (req, res) => {
 
   try {
     const apiResponse = await axios.get(policiesEndpoint(envDomain, clientID, clientSecret));
-    const policies = apiResponse.data.map(policy => policy.handle)
+    const policies = apiResponse.data
 
     res.render('policies', { 
       policies: policies,
@@ -96,8 +96,6 @@ app.get('/idme/integrated/:env/:protocol', async (req, res) => {
   try {
     const apiResponse = await axios.get(policiesEndpoint(envDomain, clientID, clientSecret));
     const policies = apiResponse.data
-
-    console.log(apiResponse.data)
     
     res.render('policies', { 
       policies: policies,
