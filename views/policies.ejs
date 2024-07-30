@@ -4,11 +4,13 @@
   <title>ID.me Demo App 3.0</title>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </head>
 <body>
   <div class="container">
-    <p class="flow-text center-align">If you are looking to test policies <strong>in <%= env %></strong>, you are in the right place. </p>
-    <table class="responsive-table">
+    <p class="flow-text center-align">If you are looking to test policies <strong>in <%= env %></strong> using <strong><%= protocol %></strong>, you are in the right place.</p>
+    <table>
       <thead>
         <tr>
           <th>Policy Name</th>
