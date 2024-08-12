@@ -69,19 +69,9 @@ app.param('policy', async function(req, res, next){
   } 
 });
 
-app.get('/idme/:env/:protocol', async (req, res) => {
-  const { env, protocol } = req.params 
-  const { envDomain, clientID, clientSecret } = envConig[env]
-
+app.get('/', (req, res) => {
   try {
-    const apiResponse = await axios.get(policiesEndpoint(envDomain, clientID, clientSecret));
-    const policies = apiResponse.data
-
-    res.render('policies', { 
-      policies: policies,
-      env: env,
-      protocol: protocol,
-      basePath: 'idme'
+    res.render('index', { 
     });
   } catch (error) {
     console.error('Error making API request:', error);
@@ -89,7 +79,20 @@ app.get('/idme/:env/:protocol', async (req, res) => {
   } 
 });
 
-app.get('/idme/integrated/:env/:protocol', async (req, res) => {
+app.get('/:env', async (req, res) => {
+  const { env } = req.params 
+
+  try {
+    res.render('env', { 
+      env: env,
+    });
+  } catch (error) {
+    console.error('Error making API request:', error);
+    res.status(500).send('An error occurred');
+  } 
+});
+
+app.get('/:env/:protocol', async (req, res) => {
   const { env, protocol } = req.params 
   const { envDomain, clientID, clientSecret } = envConig[env]
 
@@ -101,7 +104,6 @@ app.get('/idme/integrated/:env/:protocol', async (req, res) => {
       policies: policies,
       env: env,
       protocol: protocol,
-      basePath: 'idme/integrated'
     });
   } catch (error) {
     console.error('Error making API request:', error);
@@ -109,43 +111,7 @@ app.get('/idme/integrated/:env/:protocol', async (req, res) => {
   } 
 });
 
-app.get('/profile', (req, res) => {
-  const { idmePayload, idmeData } = req.cookies
-  const { fname, lname, email, zip, uuid } = idmeData
-
-  if (idmeData){
-    res.render('profile', { 
-      payload: JSON.stringify(idmePayload, null, 4), 
-      data: JSON.stringify(idmeData, null, 4), 
-      fname: fname, 
-      lname: lname, 
-      email: email,
-      zip: zip,
-      uuid: uuid 
-    });
-  } else {
-    res.redirect('/')
-  }
-});
-
-app.get('/idme/:env/:protocol/:policy', function (req, res) {
-  const { env, protocol, policy } = req.params
-  const { envDomain, clientID } = envConig[env]
-  const { state, eid } = req.query
-  const { host } = req.headers
-  const scope = protocol == 'oidc' ? `${policy} openid` : policy
-
-  res.render('index', { 
-    envDomain: envDomain,
-    clientID: clientID,
-    redirectUri: `http://${host}/callback/${env}/${protocol}`,
-    scope: scope,
-    state: state,
-    eid: eid
-  });
-});
-
-app.get('/idme/integrated/:env/:protocol/:policy', function (req, res) {
+app.get('/:env/:protocol/:policy', function (req, res) {
   const { env, protocol, policy } = req.params
   const { envDomain, clientID } = envConig[env]
   const { state, eid } = req.query
@@ -199,6 +165,25 @@ app.get('/callback/:env/:protocol', async function (req, res) {
   } catch (error) {
     console.error('Error exchanging authorization code or making API request:', error);
     res.status(500).send('An error occurred');
+  }
+});
+
+app.get('/profile', (req, res) => {
+  const { idmePayload, idmeData } = req.cookies
+  const { fname, lname, email, zip, uuid } = idmeData
+
+  if (idmeData){
+    res.render('profile', { 
+      payload: JSON.stringify(idmePayload, null, 4), 
+      data: JSON.stringify(idmeData, null, 4), 
+      fname: fname, 
+      lname: lname, 
+      email: email,
+      zip: zip,
+      uuid: uuid 
+    });
+  } else {
+    res.redirect('/')
   }
 });
 
