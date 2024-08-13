@@ -18,60 +18,36 @@
     </div>
 
     <div class="container">
-      <div class="section">
-        <div class="row">
-          <div class="col s12 m4">
-            <div class="icon-block">
-              <h2 class="center green-text"><i class="material-icons">account_circle</i></h2>
-              <h5 class="center">Profile Picture</h5>
-              <p class="light center">
-                <img src="https://via.placeholder.com/150" alt="Profile Picture" class="circle responsive-img">
-              </p>
-            </div>
-          </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Attribute</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for(const key in data) { %>
+            <% if(data.hasOwnProperty(key)) { %>
+              <tr>
+                <td><%= key %></td>
+                <td><%= data[key] %></td>
+              </tr>
+            <% } %>
+          <% } %>
+        </tbody>
+      </table>
 
-          <div class="col s12 m8">
-            <div class="icon-block">
-              <h2 class="center green-text"><i class="material-icons">info</i></h2>
-              <h5 class="center">Personal Information</h5>
-              <p class="light">
-                <strong>Name:</strong> <%= fname %> <%= lname %><br>
-                <strong>Age:</strong> 29<br>
-                <strong>Location:</strong> New York, USA<br>
-                <strong>Occupation:</strong> Software Engineer
-              </p>
-            </div>
-          </div>
-        </div>
+      <br><br>
+      <div class="row center">
+        <a href="javascript:void(0)" id="download-button" class="btn-large waves-effect waves-light green"  onclick="displayPayload()">Display Payload</a>
       </div>
+      <br><br>
 
-      <div class="section">
-        <div class="row">
-          <div class="col s12">
-            <div class="icon-block">
-              <h2 class="center green-text"><i class="material-icons">description</i></h2>
-              <h5 class="center">Bio</h5>
-              <p class="light">
-                <%= fname %> is a dedicated software engineer with over 5 years of experience in the tech industry. He specializes in web development, particularly in JavaScript and Python. In his free time, <%= fname %> enjoys hiking, reading, and contributing to open source projects.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="section no-pad-bot" id="index-banner">
-      <div class="container">
-        <br><br>
-        <div class="row center">
-          <a href="javascript:void(0)" id="download-button" class="btn-large waves-effect waves-light green"  onclick="displayPayload()">Display Payload</a>
-        </div>
-        <br><br>
-      </div>
-    </div>
-
-    <div class="json-response">
-      <pre id="jsonOutput" hidden><%= payload %></pre>
+      <pre id="jsonOutput" hidden>
+        <code>
+          <%= JSON.stringify(payload, null, 4) %>
+        </code>
+      </pre>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>

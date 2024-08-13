@@ -2,6 +2,9 @@ import express, { json } from 'express'
 import axios from 'axios'
 import cookieParser from 'cookie-parser';
 import jwt from 'jsonwebtoken'
+import bodyParser from 'body-parser';
+import { DOMParser } from 'xmldom';
+import xpath from 'xpath'
 
 const app = express()
 const port = process.env.PORT || 5001
@@ -9,6 +12,7 @@ const port = process.env.PORT || 5001
 app.use(express.static('public'));
 app.use(json());
 app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.set('view engine', 'ejs');
 app.set('views', './views');
@@ -32,6 +36,10 @@ const policiesEndpoint = (envDomain, clientID, clientSecret) => {
 }
 const apiEndpoint = (envDomain, dataEndpoint, accessToken) => {
   return `${envDomain}/api/public/v3/${dataEndpoint}.json?access_token=${accessToken}`
+}
+
+const isObject = (value) => {
+  return value !== null && typeof value === 'object';
 }
 
 app.param('env', function(req, res, next){
@@ -116,10 +124,11 @@ app.get('/idme/:env/:protocol/:policy', function (req, res) {
   const { envDomain, clientID } = envConig[env]
   const { state, eid } = req.query
   const { host } = req.headers
+  const isSAML = protocol == 'saml'
   const scope = protocol == 'oidc' ? `${policy} openid` : policy
-  const authEndpoint = `${envDomain}/oauth/authorize`
+  const authEndpoint = isSAML ? `${envDomain}/saml/SingleSignOnService` : `${envDomain}/oauth/authorize`
 
-  let params = `?client_id=${clientID}&redirect_uri=http://${host}/callback/${env}/${protocol}&response_type=code&scope=${scope}`
+  let params = isSAML ? `?EntityID=apsriggs.idme.solutions&AuthnContext=${scope}&NameIDPolicy=urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified` : `?client_id=${clientID}&redirect_uri=http://${host}/callback/${env}/${protocol}&response_type=code&scope=${scope}`
 
   if (state) {params = `${params}&state=${state}`}
   if (eid) {params = `${params}&eid=${eid}`}
@@ -168,14 +177,52 @@ app.get('/callback/:env/:protocol', async function (req, res) {
   }
 });
 
+app.post('/callback/:env/:protocol', function (req, res) {
+  const samlResponse = req.body.SAMLResponse;
+  
+  let decodedResponse = atob(samlResponse);
+
+  const doc = new DOMParser().parseFromString(decodedResponse, 'text/xml');
+  
+  // Extract the Assertion element
+  const assertion = xpath.select1("//*[local-name()='Assertion']", doc);
+
+  if (assertion) {
+    // Extract attributes from the Assertion
+    const attributes = xpath.select("//*[local-name()='Attribute']", assertion);
+
+    let idmeData = {}
+    
+    attributes.forEach(attribute => {
+      const name = attribute.getAttribute('Name');
+      const friendlyName = attribute.getAttribute('FriendlyName');
+      const values = xpath.select("./*[local-name()='AttributeValue']", attribute).map(valueNode => valueNode.textContent);
+
+      // console.log(`Attribute: ${name} (${friendlyName})`);
+      // values.forEach(value => console.log(` - Value: ${value}`));
+      values.forEach(value => idmeData[name] = value);
+    });
+
+    res.clearCookie
+    res.cookie('idmePayload', String(attributes), { expires: new Date(Date.now() + 60000) })
+    res.cookie('idmeData', idmeData, { expires: new Date(Date.now() + 60000) })
+    res.redirect('/profile');
+  } else {
+    console.log('No Assertion found in the SAML response.');
+    res.redirect('/');
+  }
+});
+
 app.get('/profile', (req, res) => {
   const { idmePayload, idmeData } = req.cookies
   const { fname, lname, email, zip, uuid } = idmeData
 
+  const formattedPayload = isObject(idmePayload) ? JSON.stringify(idmePayload, null, 4) : idmePayload
+
   if (idmeData){
     res.render('profile', { 
-      payload: JSON.stringify(idmePayload, null, 4), 
-      data: JSON.stringify(idmeData, null, 4), 
+      payload: formattedPayload, 
+      data: idmeData, 
       fname: fname, 
       lname: lname, 
       email: email,
