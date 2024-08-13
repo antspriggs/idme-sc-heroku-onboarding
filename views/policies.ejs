@@ -13,19 +13,20 @@
     <table>
       <thead>
         <tr>
-          <th>Policy Name</th>
-          <th>Test Link</th>
+            <th>Policy Name</th>
+            <!-- <th>Description</th> -->
         </tr>
       </thead>
+
       <tbody>
         <% for(var i=0; i < policies.length; i++) { %>
           <tr>
-            <td><%= policies[i].name %></td>
             <td>
-              <a href="/<%= env %>/<%= protocol %>/<%= encodeURIComponent(policies[i].handle) %>"> 
-                /<%= env %>/<%= protocol %>/<%= encodeURIComponent(policies[i].handle) %>
+              <a href="/idme/<%= env %>/<%= protocol %>/<%= encodeURIComponent(policies[i].handle) %>"> 
+                <%= policies[i].name %>
               </a>
             </td>
+            <!-- <td>Coming soon...</td> -->
           </tr>
         <% } %>
       </tbody>

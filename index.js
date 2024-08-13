@@ -38,7 +38,7 @@ app.param('env', function(req, res, next){
   if (envConig[req.params.env]) {
     next();
   } else {
-    next(res.status(404).send('failed to find protocol'));
+    next(res.status(404).send('failed to find environment'));
   }
 });
 
@@ -79,7 +79,7 @@ app.get('/', (req, res) => {
   } 
 });
 
-app.get('/:env', async (req, res) => {
+app.get('/idme/:env', async (req, res) => {
   const { env } = req.params 
 
   try {
@@ -92,7 +92,7 @@ app.get('/:env', async (req, res) => {
   } 
 });
 
-app.get('/:env/:protocol', async (req, res) => {
+app.get('/idme/:env/:protocol', async (req, res) => {
   const { env, protocol } = req.params 
   const { envDomain, clientID, clientSecret } = envConig[env]
 
@@ -111,7 +111,7 @@ app.get('/:env/:protocol', async (req, res) => {
   } 
 });
 
-app.get('/:env/:protocol/:policy', function (req, res) {
+app.get('/idme/:env/:protocol/:policy', function (req, res) {
   const { env, protocol, policy } = req.params
   const { envDomain, clientID } = envConig[env]
   const { state, eid } = req.query
@@ -134,7 +134,7 @@ app.get('/callback/:env/:protocol', async function (req, res) {
   const { host } = req.headers
   const isOIDC = protocol == 'oidc'
   const dataEndpoint = isOIDC ? 'userinfo' : 'attributes'
-
+  
   if (!authorizationCode) {
     return res.status(400).send('Authorization code not provided');
   }
