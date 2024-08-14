@@ -128,7 +128,7 @@ app.get('/idme/:env/:protocol/:policy', function (req, res) {
   const scope = protocol == 'oidc' ? `${policy} openid` : policy
   const authEndpoint = isSAML ? `${envDomain}/saml/SingleSignOnService` : `${envDomain}/oauth/authorize`
 
-  let params = isSAML ? `?EntityID=apsriggs.idme.solutions&AuthnContext=${scope}&NameIDPolicy=urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified` : `?client_id=${clientID}&redirect_uri=http://${host}/callback/${env}/${protocol}&response_type=code&scope=${scope}`
+  let params = isSAML ? `?EntityID=apsriggs.idme.solutions&AuthnContext=${scope}&NameIDPolicy=urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified` : `?client_id=${clientID}&redirect_uri=https://${host}/callback/${env}/${protocol}&response_type=code&scope=${scope}`
 
   if (state) {params = `${params}&state=${state}`}
   if (eid) {params = `${params}&eid=${eid}`}
@@ -153,7 +153,7 @@ app.get('/callback/:env/:protocol', async function (req, res) {
       code: authorizationCode,
       client_id: clientID,
       client_secret: clientSecret,
-      redirect_uri: `http://${host}/callback/${env}/${protocol}`,
+      redirect_uri: `https://${host}/callback/${env}/${protocol}`,
       grant_type: 'authorization_code'
     });
     
