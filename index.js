@@ -67,7 +67,7 @@ app.param('policy', async function(req, res, next){
     const apiResponse = await axios.get(policiesEndpoint(envDomain, clientID, clientSecret));
     const policies = apiResponse.data.map(policy => policy.handle)
 
-    if (policies.includes(policy)) {
+    if (policies.includes(policy) || policy == 'groups') {
       next();
     } else {
       next(res.status(404).send('failed to find policy'));
