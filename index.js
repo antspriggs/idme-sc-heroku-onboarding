@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken'
 import bodyParser from 'body-parser';
 import { DOMParser } from 'xmldom';
 import xpath from 'xpath'
+import 'dotenv/config';
 
 const app = express()
 const port = process.env.PORT || 5001
@@ -122,16 +123,34 @@ app.get('/idme/:env/:protocol', async (req, res) => {
 app.get('/idme/:env/:protocol/:policy', function (req, res) {
   const { env, protocol, policy } = req.params
   const { envDomain, clientID } = envConig[env]
-  const { state, eid } = req.query
+  const { state, eid, groups } = req.query
   const { host } = req.headers
   const isSAML = protocol == 'saml'
   const scope = protocol == 'oidc' ? `${policy} openid` : policy
-  const authEndpoint = isSAML ? `${envDomain}/saml/SingleSignOnService` : `${envDomain}/oauth/authorize`
+  const oauthEndpoint = policy == 'groups' ? `https://groups.id.me` : `${envDomain}/oauth/authorize`
+  const authEndpoint = isSAML ? `${envDomain}/saml/SingleSignOnService` : oauthEndpoint
 
-  let params = isSAML ? `?EntityID=apsriggs.idme.solutions&AuthnContext=${scope}&NameIDPolicy=urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified` : `?client_id=${clientID}&redirect_uri=https://${host}/callback/${env}/${protocol}&response_type=code&scope=${scope}`
+  const protocolPolicy = policy == 'groups' ? 'groups' : protocol
+
+  let params = null
+  // let params = isSAML ? `?EntityID=apsriggs.idme.solutions&AuthnContext=${scope}&NameIDPolicy=urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified` : `?client_id=${clientID}&redirect_uri=https://${host}/callback/${env}/${protocol}&response_type=code&scope=${scope}`
+
+  switch (protocolPolicy) {
+    case 'groups':
+      // params = `?client_id=${clientID}&redirect_uri=https://${host}/callback/${env}/${protocol}&response_type=code&scopes=${scope}&sandbox=${env == 'sandbox'}`
+      params = `?client_id=${clientID}&redirect_uri=https://${host}/callback/${env}/${protocol}&response_type=code&scopes=military,responder,student,teacher,government&sandbox=${env == 'sandbox'}`
+      break;
+    case 'oauth' || 'oidc':
+      params = `?client_id=${clientID}&redirect_uri=https://${host}/callback/${env}/${protocol}&response_type=code&scope=${scope}`
+      break;
+    case 'saml':
+      params = `?EntityID=apsriggs.idme.solutions&AuthnContext=${scope}&NameIDPolicy=urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified`
+      break;
+  }
 
   if (state) {params = `${params}&state=${state}`}
   if (eid) {params = `${params}&eid=${eid}`}
+  if (groups) {params = `${params}&scopes=${groups}`}
 
   res.redirect(`${authEndpoint}${params}`)
 });
